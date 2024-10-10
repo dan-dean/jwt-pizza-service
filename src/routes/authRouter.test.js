@@ -72,17 +72,16 @@ describe("authRouter", () => {
 				Math.random().toString(36).substring(2, 12) + "@test.com";
 			const createdUser = await request(app).post("/api/auth").send(testUser);
 
-			let authUser = await createAdminUser();
+			let adminUser = await createAdminUser();
 
-			console.log(authUser);
 			const loginRes = await request(app).put("/api/auth").send({
-				name: authUser.name,
-				email: authUser.email,
-				password: authUser.password,
+				name: adminUser.name,
+				email: adminUser.email,
+				password: adminUser.password,
 			});
 
-			let authUserAuthToken = loginRes.body.token;
-			expectValidJwt(authUserAuthToken);
+			let adminUserAuthToken = loginRes.body.token;
+			expectValidJwt(adminUserAuthToken);
 
 			const userId = createdUser.body.user.id;
 			const updatedUserData = {
@@ -92,7 +91,7 @@ describe("authRouter", () => {
 
 			const updateUserRes = await request(app)
 				.put(`/api/auth/${userId}`)
-				.set("Authorization", `Bearer ${authUserAuthToken}`)
+				.set("Authorization", `Bearer ${adminUserAuthToken}`)
 				.send(updatedUserData);
 
 			expect(updateUserRes.status).toBe(200);
